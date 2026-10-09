@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Matematika SD</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#4F46E5',
+                            yellow: '#F59E0B',
+                            pink: '#EC4899',
+                            green: '#10B981',
+                            purple: '#8B5CF6',
+                            bg: '#F0F9FF'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Fredoka', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Fredoka', cursive, sans-serif;
+            background-color: #F0F9FF;
+            background-image: radial-gradient(#e0f2fe 2px, transparent 2px);
+            background-size: 24px 24px;
+        }
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .pulse-slow {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between selection:bg-yellow-200">
+
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-md shadow-md sticky top-0 z-40 border-b-4 border-yellow-400">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('home')">
+                <div class="w-12 h-12 bg-yellow-400 rounded-2xl flex items-center justify-center shadow-md transform -rotate-6">
+                    <i class="fa-solid fa-calculator text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold text-indigo-900 leading-tight">MathPintar SD</h1>
+                    <p class="text-xs text-indigo-500 font-medium">Belajar Matematika Jadi Seru! ✨</p>
+                </div>
+            </div>
+
+            <!-- Stats & Sound Controls -->
+            <div class="flex items-center gap-3">
+                <div class="bg-amber-100 border-2 border-amber-300 rounded-full px-4 py-1.5 flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-star text-amber-500 text-lg"></i>
+                    <span id="starCount" class="font-bold text-amber-900 text-lg">0</span>
+                </div>
+                <button id="soundBtn" onclick="toggleSound()" class="w-10 h-10 bg-slate-100 hover:bg-slate-200 border-2 border-slate-300 rounded-full flex items-center justify-center text-slate-600 transition">
+                    <i class="fa-solid fa-volume-high" id="soundIcon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-5xl mx-auto px-4 py-6 w-full flex-grow">
+
+        <!-- VIEW 1: HOME MENU -->
+        <section id="viewHome" class="space-y-8">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden">
+                <div class="relative z-10 max-w-xl">
+                    <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">Selamat Datang Bintang Kecil! ⭐</span>
+                    <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-3">Siap Menjadi Juara Matematika Hari Ini?</h2>
+                    <p class="text-indigo-100 mb-6 text-sm md:text-base">Pilih petualangan favoritmu dan kumpulkan sebanyak mungkin bintang emas!</p>
+                    <button onclick="switchTab('quiz')" class="bg-yellow-400 hover:bg-yellow-300 text-indigo-950 font-bold px-6 py-3 rounded-2xl shadow-lg border-b-4 border-yellow-600 btn-bounce flex items-center gap-2 text-lg">
+                        <i class="fa-solid fa-play"></i> Mulai Belajar Sekarang
+                    </button>
+                </div>
+                <i class="fa-solid fa-shapes text-9xl absolute -bottom-10 -right-6 text-white/10 transform rotate-12"></i>
+            </div>
+
+            <!-- Grade Selector -->
+            <div>
+                <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-indigo-600"></i> Pilih Tingkat Kelasmu
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="selectGrade(1)" id="gradeBtn1" class="grade-card p-5 rounded-2xl bg-white border-4 border-emerald-400 shadow-md hover:shadow-xl transition flex flex-col items-center text-center relative overflow-hidden group">
+                        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl font-bold mb-3 group-hover:scale-110 transition">
+                            1-2
+                        </div>
+                        <h4 class="font-bold text-lg text-slate-800">Kelas 1 & 2</h4>
+                        <p class="text-xs text-slate-500 mt-1">Penjumlahan & Pengurangan dasar dengan Bantuan Apel 🍎</p>
+                        <span class="mt-3 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">Pemula</span>
+                    </button>
+
+                    <button onclick="selectGrade(3)" id="gradeBtn3" class="grade-card p-5 rounded-2xl bg-white border-4 border-blue-200 hover:border-blue-400 shadow-md hover:shadow-xl transition flex flex-col items-center text-center relative overflow-hidden group">
+                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl font-bold mb-3 group-hover:scale-110 transition">
+                            3-4
+                        </div>
+                        <h4 class="font-bold text-lg text-slate-800">Kelas 3 & 4</h4>
+                        <p class="text-xs text-slate-500 mt-1">Perkalian, Pembagian & Pecahan Sederhana 🍕</p>
+                        <span class="mt-3 text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">Menengah</span>
+                    </button>
+
+                    <button onclick="selectGrade(5)" id="gradeBtn5" class="grade-card p-5 rounded-2xl bg-white border-4 border-purple-200 hover:border-purple-400 shadow-md hover:shadow-xl transition flex flex-col items-center text-center relative overflow-hidden group">
+                        <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center text-2xl font-bold mb-3 group-hover:scale-110 transition">
+                            5-6
+                        </div>
+                        <h4 class="font-bold text-lg text-slate-800">Kelas 5 & 6</h4>
+                        <p class="text-xs text-slate-500 mt-1">Operasi Campuran, Persentase & FPB/KPK 🧠</p>
+                        <span class="mt-3 text-xs font-bold text-purple-600 bg-purple-50 px-3 py-1 rounded-full">Mahir</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Activity Modes -->
+            <div>
+                <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-gamepad text-indigo-600"></i> Mode Permainan & Belajar
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Card 1: Kuis -->
+                    <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-md hover:shadow-lg transition flex flex-col justify-between">
+                        <div>
+                            <div class="w-14 h-14 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-2xl mb-4">
+                                <i class="fa-solid fa-brain"></i>
+                            </div>
+                            <h4 class="font-bold text-xl text-slate-800 mb-1">Kuis Pintar</h4>
+                            <p class="text-slate-500 text-sm">Latihan soal interaktif dengan petunjuk visual menarik.</p>
+                        </div>
+                        <button onclick="switchTab('quiz')" class="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl btn-bounce">
+                            Mulai Kuis
+                        </button>
+                    </div>
+
+                    <!-- Card 2: Balloon Game -->
+                    <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-md hover:shadow-lg transition flex flex-col justify-between">
+                        <div>
+                            <div class="w-14 h-14 bg-pink-100 text-pink-600 rounded-2xl flex items-center justify-center text-2xl mb-4">
+                                <i class="fa-solid fa-balloon"></i>
+                            </div>
+                            <h4 class="font-bold text-xl text-slate-800 mb-1">Tangkap Balon</h4>
+                            <p class="text-slate-500 text-sm">Pecahkan balon dengan jawaban yang benar sebelum terbang!</p>
+                        </div>
+                        <button onclick="switchTab('game')" class="mt-6 w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-2.5 rounded-xl btn-bounce">
+                            Main Game
+                        </button>
+                    </div>
+
+                    <!-- Card 3: Visual Lab -->
+                    <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-md hover:shadow-lg transition flex flex-col justify-between">
+                        <div>
+                            <div class="w-14 h-14 bg-cyan-100 text-cyan-600 rounded-2xl flex items-center justify-center text-2xl mb-4">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </div>
+                            <h4 class="font-bold text-xl text-slate-800 mb-1">Lab Visual</h4>
+                            <p class="text-slate-500 text-sm">Eksplorasi konsep pecahan dan bentuk bangun datar secara visual.</p>
+                        </div>
+                        <button onclick="switchTab('lab')" class="mt-6 w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 rounded-xl btn-bounce">
+                            Buka Lab
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 2: QUIZ INTERAKTIF -->
+        <section id="viewQuiz" class="hidden space-y-6">
+            <div class="flex items-center justify-between bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <button onclick="switchTab('home')" class="text-slate-500 hover:text-slate-800 font-bold flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali
+                </button>
+                <div class="flex items-center gap-2">
+                    <span id="currentGradeBadge" class="bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full font-bold">Kelas 1-2</span>
+                    <span class="text-slate-400">|</span>
+                    <span id="quizProgressText" class="text-slate-600 font-bold text-sm">Soal 1/5</span>
+                </div>
+            </div>
+
+            <!-- Quiz Main Card -->
+            <div class="bg-white rounded-3xl border-4 border-indigo-100 shadow-xl p-6 md:p-8 text-center relative overflow-hidden">
+                <!-- Visual Helper Area -->
+                <div id="visualHelper" class="min-h-[90px] bg-slate-50 rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-center gap-2 border-2 border-dashed border-slate-200">
+                    <!-- Visual counter or shape rendered via JS -->
+                </div>
+
+                <!-- Math Problem Text -->
+                <div class="my-6">
+                    <span class="text-slate-400 text-sm uppercase tracking-wider font-bold">Berapa Hasil Dari:</span>
+                    <h2 id="questionText" class="text-4xl md:text-6xl font-extrabold text-indigo-900 mt-2 tracking-wide">
+                        5 + 3 = ?
+                    </h2>
+                </div>
+
+                <!-- Answer Options -->
+                <div id="optionsContainer" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+                    <!-- Dynamically generated buttons -->
+                </div>
+
+                <!-- Feedback Message -->
+                <div id="quizFeedback" class="hidden mt-6 p-4 rounded-2xl font-bold text-lg animate-bounce">
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: MINI-GAME TANGKAP BALON -->
+        <section id="viewGame" class="hidden space-y-4">
+            <div class="flex items-center justify-between bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <button onclick="switchTab('home')" class="text-slate-500 hover:text-slate-800 font-bold flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali
+                </button>
+                <div class="flex items-center gap-4">
+                    <div class="text-pink-600 font-bold text-sm">
+                        <i class="fa-solid fa-trophy"></i> Skor Game: <span id="gameScore">0</span>
+                    </div>
+                    <button onclick="initGame()" class="bg-pink-100 text-pink-600 px-3 py-1 rounded-xl font-bold text-xs hover:bg-pink-200">
+                        <i class="fa-solid fa-rotate-right"></i> Ulang
+                    </button>
+                </div>
+            </div>
+
+            <!-- Canvas Container -->
+            <div class="bg-slate-900 rounded-3xl overflow-hidden shadow-2xl relative border-4 border-pink-300">
+                <!-- Overlay Game Target -->
+                <div class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur-md px-6 py-2 rounded-2xl shadow-lg border-2 border-pink-400 text-center z-10">
+                    <span class="text-xs text-slate-500 font-bold uppercase">Pecahkan Balon Dengan Hasil:</span>
+                    <div id="gameTargetText" class="text-2xl md:text-3xl font-extrabold text-indigo-900">4 + 2</div>
+                </div>
+
+                <canvas id="balloonCanvas" class="w-full h-[450px] block cursor-pointer"></canvas>
+            </div>
+            <p class="text-center text-slate-500 text-xs">Klik / Sentuh balon angka yang merupakan jawaban benar!</p>
+        </section>
+
+        <!-- VIEW 4: LAB VISUAL PECAHAN & BANGUN DATAR -->
+        <section id="viewLab" class="hidden space-y-6">
+            <div class="flex items-center justify-between bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <button onclick="switchTab('home')" class="text-slate-500 hover:text-slate-800 font-bold flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali
+                </button>
+                <span class="font-bold text-slate-700">Eksplorasi Konsep Visual</span>
+            </div>
+
+            <!-- Lab Tabs -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Visual Pecahan (Pizza / Pie Chart) -->
+                <div class="bg-white p-6 rounded-3xl border-2 border-cyan-100 shadow-md">
+                    <h3 class="font-bold text-xl text-slate-800 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-pizza-slice text-amber-500"></i> Visual Pecahan
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-4">Gunakan penggeser untuk melihat bagaimana pecahan dibentuk.</p>
+
+                    <div class="flex flex-col items-center justify-center my-4">
+                        <div id="fractionVisual" class="w-40 h-40 rounded-full border-4 border-slate-800 relative overflow-hidden flex items-center justify-center bg-amber-100 shadow-inner">
+                            <!-- SVG Pizza Slice Rendered via JS -->
+                        </div>
+                        <div id="fractionLabel" class="text-3xl font-extrabold text-cyan-600 mt-4">1 / 4</div>
+                    </div>
+
+                    <div class="space-y-3 mt-6">
+                        <label class="text-xs font-bold text-slate-600">Pilih Pembilang (Bagian Terambil):</label>
+                        <input type="range" id="numeratorRange" min="1" max="4" value="1" oninput="updateFractionLab()" class="w-full accent-cyan-500">
+                        <label class="text-xs font-bold text-slate-600">Pilih Penyebut (Total Bagian):</label>
+                        <input type="range" id="denominatorRange" min="2" max="8" value="4" oninput="updateFractionLab()" class="w-full accent-indigo-500">
+                    </div>
+                </div>
+
+                <!-- Bangun Datar Interactive -->
+                <div class="bg-white p-6 rounded-3xl border-2 border-purple-100 shadow-md">
+                    <h3 class="font-bold text-xl text-slate-800 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-shapes text-purple-500"></i> Eksplorasi Bangun Datar
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-4">Klik bangun datar untuk mempelajari rumus keliling dan luas.</p>
+
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <button onclick="selectShape('square')" class="p-3 bg-purple-50 hover:bg-purple-100 rounded-xl font-bold text-purple-700 text-sm flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-square text-lg"></i> Persegi
+                        </button>
+                        <button onclick="selectShape('rectangle')" class="p-3 bg-indigo-50 hover:bg-indigo-100 rounded-xl font-bold text-indigo-700 text-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-rectangle-wide text-lg"></i> Persegi Panjang
+                        </button>
+                        <button onclick="selectShape('triangle')" class="p-3 bg-pink-50 hover:bg-pink-100 rounded-xl font-bold text-pink-700 text-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-triangle-exclamation text-lg"></i> Segitiga
+                        </button>
+                        <button onclick="selectShape('circle')" class="p-3 bg-emerald-50 hover:bg-emerald-100 rounded-xl font-bold text-emerald-700 text-sm flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-circle text-lg"></i> Lingkaran
+                        </button>
+                    </div>
+
+                    <div id="shapeInfoBox" class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                        <h4 id="shapeTitle" class="font-bold text-slate-800 text-lg">Persegi</h4>
+                        <p id="shapeDesc" class="text-xs text-slate-600 mt-1">Memiliki 4 sisi sama panjang dan 4 sudut siku-siku.</p>
+                        <div class="mt-3 text-xs font-mono bg-white p-2.5 rounded-xl border border-slate-200 text-indigo-900 space-y-1">
+                            <div><strong>Luas:</strong> <span id="shapeFormulaArea">Sisi × Sisi</span></div>
+                            <div><strong>Keliling:</strong> <span id="shapeFormulaPerimeter">4 × Sisi</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        <div class="max-w-5xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2">
+            <p>© 2026 MathPintar SD — Media Pembelajaran Matematika Sekolah Dasar</p>
+            <div class="flex items-center gap-3">
+                <span class="hover:text-slate-800 cursor-pointer" onclick="switchTab('home')">Beranda</span>
+                <span>•</span>
+                <span class="text-emerald-600 font-bold"><i class="fa-solid fa-shield-heart"></i> Ramah Anak</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global Application State
+        let currentGrade = 1; // 1, 3, or 5
+        let currentStars = 0;
+        let soundEnabled = true;
+
+        // Web Audio API Synthesizer (No external asset dependency)
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new AudioContext();
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.3); // A5
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now); // A3
+                    osc.frequency.linearRampToValueAtTime(110, now + 0.3); // A2
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'pop') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                }
+            } catch (e) {
+                console.log("Audio not allowed yet");
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            icon.className = soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+        }
+
+        function switchTab(tabName) {
+            document.getElementById('viewHome').classList.add('hidden');
+            document.getElementById('viewQuiz').classList.add('hidden');
+            document.getElementById('viewGame').classList.add('hidden');
+            document.getElementById('viewLab').classList.add('hidden');
+
+            if (tabName === 'home') document.getElementById('viewHome').classList.remove('hidden');
+            if (tabName === 'quiz') {
+                document.getElementById('viewQuiz').classList.remove('hidden');
+                generateNewQuestion();
+            }
+            if (tabName === 'game') {
+                document.getElementById('viewGame').classList.remove('hidden');
+                initGame();
+            }
+            if (tabName === 'lab') {
+                document.getElementById('viewLab').classList.remove('hidden');
+                updateFractionLab();
+            }
+        }
+
+        function selectGrade(grade) {
+            currentGrade = grade;
+            
+            // Highlight Grade Cards
+            [1, 3, 5].forEach(g => {
+                const btn = document.getElementById(`gradeBtn${g}`);
+                if (g === grade) {
+                    btn.classList.add('border-emerald-400', 'ring-2', 'ring-emerald-300');
+                    btn.classList.remove('border-blue-200', 'border-purple-200');
+                } else {
+                    btn.classList.remove('border-emerald-400', 'ring-2', 'ring-emerald-300');
+                }
+            });
+
+            const gradeBadge = document.getElementById('currentGradeBadge');
+            if (grade === 1) gradeBadge.innerText = "Kelas 1-2";
+            if (grade === 3) gradeBadge.innerText = "Kelas 3-4";
+            if (grade === 5) gradeBadge.innerText = "Kelas 5-6";
+
+            playSound('pop');
+        }
+
+        let currentQuestionObj = null;
+
+        function generateQuestionData() {
+            let num1, num2, answer, questionStr, visualItems = null;
+
+            if (currentGrade === 1) {
+                // Basic Addition & Subtraction (1-20)
+                const isAddition = Math.random() > 0.4;
+                if (isAddition) {
+                    num1 = Math.floor(Math.random() * 8) + 1;
+                    num2 = Math.floor(Math.random() * 8) + 1;
+                    answer = num1 + num2;
+                    questionStr = `${num1} + ${num2} = ?`;
+                    visualItems = { type: 'apples', count1: num1, count2: num2, op: '+' };
+                } else {
+                    num1 = Math.floor(Math.random() * 10) + 5;
+                    num2 = Math.floor(Math.random() * num1) + 1;
+                    answer = num1 - num2;
+                    questionStr = `${num1} - ${num2} = ?`;
+                    visualItems = { type: 'apples', count1: num1, count2: num2, op: '-' };
+                }
+            } else if (currentGrade === 3) {
+                // Multiplication & Division
+                const isMult = Math.random() > 0.5;
+                if (isMult) {
+                    num1 = Math.floor(Math.random() * 8) + 2;
+                    num2 = Math.floor(Math.random() * 8) + 2;
+                    answer = num1 * num2;
+                    questionStr = `${num1} × ${num2} = ?`;
+                } else {
+                    num2 = Math.floor(Math.random() * 7) + 2;
+                    answer = Math.floor(Math.random() * 8) + 2;
+                    num1 = num2 * answer;
+                    questionStr = `${num1} ÷ ${num2} = ?`;
+                }
+            } else {
+                // Mixed Operations / Percent / FPB
+                const mode = Math.floor(Math.random() * 3);
+                if (mode === 0) {
+                    num1 = Math.floor(Math.random() * 15) + 10;
+                    num2 = Math.floor(Math.random() * 5) + 2;
+                    let num3 = Math.floor(Math.random() * 10) + 1;
+                    answer = (num1 * num2) - num3;
+                    questionStr = `(${num1} × ${num2}) - ${num3} = ?`;
+                } else if (mode === 1) {
+                    const percents = [10, 25, 50, 75];
+                    const p = percents[Math.floor(Math.random() * percents.length)];
+                    const base = (Math.floor(Math.random() * 8) + 1) * 20;
+                    answer = (p / 100) * base;
+                    questionStr = `${p}% dari ${base} = ?`;
+                } else {
+                    num1 = Math.floor(Math.random() * 20) + 10;
+                    num2 = Math.floor(Math.random() * 20) + 10;
+                    answer = num1 + num2;
+                    questionStr = `${num1} + ${num2} = ?`;
+                }
+            }
+
+            // Generate 4 Multiple Choice Options
+            let options = new Set([answer]);
+            while (options.size < 4) {
+                let offset = (Math.floor(Math.random() * 7) + 1) * (Math.random() > 0.5 ? 1 : -1);
+                let wrongOption = answer + offset;
+                if (wrongOption >= 0) options.add(wrongOption);
+            }
+
+            return {
+                questionText: questionStr,
+                correctAnswer: answer,
+                options: Array.from(options).sort(() => Math.random() - 0.5),
+                visual: visualItems
+            };
+        }
+
+        function generateNewQuestion() {
+            currentQuestionObj = generateQuestionData();
+            
+            // Hide feedback
+            const fb = document.getElementById('quizFeedback');
+            fb.className = 'hidden';
+
+            // Render Text
+            document.getElementById('questionText').innerText = currentQuestionObj.questionText;
+
+            // Render Visual Aids
+            const visualBox = document.getElementById('visualHelper');
+            visualBox.innerHTML = '';
+
+            if (currentQuestionObj.visual) {
+                const v = currentQuestionObj.visual;
+                let html = `<div class="flex items-center gap-2 flex-wrap justify-center">`;
+                
+                // Group 1
+                html += `<div class="bg-red-50 p-2 rounded-xl flex items-center gap-1 border border-red-200">`;
+                for(let i=0; i<v.count1; i++) html += `<span class="text-xl">🍎</span>`;
+                html += `</div>`;
+
+                html += `<span class="text-2xl font-bold text-slate-600">${v.op}</span>`;
+
+                // Group 2
+                html += `<div class="bg-amber-50 p-2 rounded-xl flex items-center gap-1 border border-amber-200">`;
+                for(let i=0; i<v.count2; i++) html += `<span class="text-xl">🍎</span>`;
+                html += `</div>`;
+
+                html += `</div>`;
+                visualBox.innerHTML = html;
+            } else {
+                visualBox.innerHTML = `<span class="text-slate-400 text-sm italic"><i class="fa-solid fa-lightbulb text-amber-400"></i> Hitung dengan teliti di kertas coret-coretanmu ya!</span>`;
+            }
+
+            // Render Buttons
+            const btnContainer = document.getElementById('optionsContainer');
+            btnContainer.innerHTML = '';
+
+            const colors = [
+                'bg-emerald-500 hover:bg-emerald-600 border-emerald-700',
+                'bg-blue-500 hover:bg-blue-600 border-blue-700',
+                'bg-purple-500 hover:bg-purple-600 border-purple-700',
+                'bg-amber-500 hover:bg-amber-600 border-amber-700'
+            ];
+
+            currentQuestionObj.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `${colors[idx % colors.length]} text-white text-2xl md:text-3xl font-extrabold py-4 px-6 rounded-2xl shadow-lg border-b-4 btn-bounce transition`;
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt);
+                btnContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedOpt) {
+            const fb = document.getElementById('quizFeedback');
+            fb.classList.remove('hidden');
+
+            if (selectedOpt === currentQuestionObj.correctAnswer) {
+                playSound('correct');
+                fb.className = 'mt-6 p-4 rounded-2xl font-bold text-lg bg-emerald-100 text-emerald-800 border-2 border-emerald-400 block';
+                fb.innerHTML = '🎉 HORE! Jawabanmu Benar Sekali! (+1 ⭐)';
+                
+                // Add stars
+                currentStars += 1;
+                document.getElementById('starCount').innerText = currentStars;
+
+                // Confetti
+                confetti({
+                    particleCount: 50,
+                    spread: 60,
+                    origin: { y: 0.7 }
+                });
+
+                setTimeout(() => {
+                    generateNewQuestion();
+                }, 1500);
+            } else {
+                playSound('wrong');
+                fb.className = 'mt-6 p-4 rounded-2xl font-bold text-lg bg-red-100 text-red-800 border-2 border-red-400 block';
+                fb.innerHTML = '❌ Ups, Hampir Benar! Coba Hitung Lagi Ya! 💪';
+            }
+        }
+
+        let gameCanvas, ctx;
+        let balloons = [];
+        let gameScore = 0;
+        let gameCurrentTarget = { problem: '', answer: 0 };
+        let animationFrameId;
+
+        function initGame() {
+            gameCanvas = document.getElementById('balloonCanvas');
+            ctx = gameCanvas.getContext('2d');
+            
+            // Adjust canvas resolution
+            gameCanvas.width = gameCanvas.offsetWidth;
+            gameCanvas.height = 450;
+
+            gameScore = 0;
+            document.getElementById('gameScore').innerText = gameScore;
+
+            spawnNewGameTarget();
+
+            // Bind click/touch
+            gameCanvas.onclick = handleCanvasClick;
+
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            gameLoop();
+        }
+
+        function spawnNewGameTarget() {
+            let n1 = Math.floor(Math.random() * 8) + 1;
+            let n2 = Math.floor(Math.random() * 8) + 1;
+            let ans = n1 + n2;
+
+            gameCurrentTarget = {
+                problem: `${n1} + ${n2}`,
+                answer: ans
+            };
+
+            document.getElementById('gameTargetText').innerText = `${n1} + ${n2}`;
+
+            // Create Balloons
+            balloons = [];
+            const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6'];
+            
+            // Ensure 1 correct balloon and 3-4 wrong ones
+            let numbers = [ans];
+            while (numbers.length < 5) {
+                let dummy = Math.floor(Math.random() * 16) + 1;
+                if (!numbers.includes(dummy)) numbers.push(dummy);
+            }
+            numbers.sort(() => Math.random() - 0.5);
+
+            numbers.forEach((num, index) => {
+                balloons.push({
+                    x: (gameCanvas.width / 6) * (index + 1),
+                    y: gameCanvas.height + Math.random() * 100 + 30,
+                    radius: 35,
+                    val: num,
+                    color: colors[index % colors.length],
+                    speed: 1 + Math.random() * 1.2
+                });
+            });
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+            // Draw Clouds in Background
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.beginPath();
+            ctx.arc(100, 80, 40, 0, Math.PI * 2);
+            ctx.arc(140, 80, 50, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Update & Draw Balloons
+            balloons.forEach((b) => {
+                b.y -= b.speed;
+
+                // Reset if goes off top
+                if (b.y + b.radius < 0) {
+                    b.y = gameCanvas.height + 50;
+                }
+
+                // Draw String
+                ctx.beginPath();
+                ctx.moveTo(b.x, b.y + b.radius);
+                ctx.lineTo(b.x, b.y + b.radius + 25);
+                ctx.strokeStyle = '#94A3B8';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Draw Balloon Body
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+                ctx.fillStyle = b.color;
+                ctx.fill();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.stroke();
+
+                // Draw Text Number
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 22px Fredoka, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(b.val, b.x, b.y);
+            });
+
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        function handleCanvasClick(e) {
+            const rect = gameCanvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+
+            balloons.forEach((b) => {
+                const dist = Math.hypot(clickX - b.x, clickY - b.y);
+                if (dist < b.radius) {
+                    if (b.val === gameCurrentTarget.answer) {
+                        playSound('pop');
+                        gameScore += 10;
+                        currentStars += 1;
+                        document.getElementById('starCount').innerText = currentStars;
+                        document.getElementById('gameScore').innerText = gameScore;
+                        
+                        // Respawn new set
+                        spawnNewGameTarget();
+                    } else {
+                        playSound('wrong');
+                    }
+                }
+            });
+        }
+
+        function updateFractionLab() {
+            const num = parseInt(document.getElementById('numeratorRange').value);
+            const den = parseInt(document.getElementById('denominatorRange').value);
+
+            // Fix numerator if greater than denominator
+            if (num > den) {
+                document.getElementById('numeratorRange').value = den;
+                return updateFractionLab();
+            }
+
+            document.getElementById('fractionLabel').innerText = `${num} / ${den}`;
+
+            const container = document.getElementById('fractionVisual');
+            container.innerHTML = '';
+
+            // Render SVG Pie Chart
+            const svgNS = "http://www.w3.org/2000/svg";
+            const svg = document.createElementNS(svgNS, "svg");
+            svg.setAttribute("viewBox", "0 0 100 100");
+            svg.setAttribute("class", "w-full h-full transform -rotate-90");
+
+            let cumulativeAngle = 0;
+
+            for (let i = 0; i < den; i++) {
+                const angle = 360 / den;
+                const startAngle = cumulativeAngle;
+                const endAngle = cumulativeAngle + angle;
+                cumulativeAngle += angle;
+
+                const x1 = 50 + 50 * Math.cos(Math.PI * startAngle / 180);
+                const y1 = 50 + 50 * Math.sin(Math.PI * startAngle / 180);
+                const x2 = 50 + 50 * Math.cos(Math.PI * endAngle / 180);
+                const y2 = 50 + 50 * Math.sin(Math.PI * endAngle / 180);
+
+                const largeArcFlag = angle > 180 ? 1 : 0;
+
+                const pathData = `M 50 50 L ${x1} ${y1} A 50 50 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+
+                const path = document.createElementNS(svgNS, "path");
+                path.setAttribute("d", pathData);
+                path.setAttribute("fill", i < num ? "#F59E0B" : "#FEE2E2");
+                path.setAttribute("stroke", "#FFFFFF");
+                path.setAttribute("stroke-width", "1.5");
+
+                svg.appendChild(path);
+            }
+
+            container.appendChild(svg);
+        }
+
+        function selectShape(shapeType) {
+            playSound('pop');
+            const title = document.getElementById('shapeTitle');
+            const desc = document.getElementById('shapeDesc');
+            const area = document.getElementById('shapeFormulaArea');
+            const peri = document.getElementById('shapeFormulaPerimeter');
+
+            if (shapeType === 'square') {
+                title.innerText = "Persegi (Kotak)";
+                desc.innerText = "Memiliki 4 sisi sama panjang dan 4 sudut 90 derajat.";
+                area.innerText = "s × s (Sisi × Sisi)";
+                peri.innerText = "4 × s";
+            } else if (shapeType === 'rectangle') {
+                title.innerText = "Persegi Panjang";
+                desc.innerText = "Memiliki 2 pasang sisi sejajar yang sama panjang.";
+                area.innerText = "p × l (Panjang × Lebar)";
+                peri.innerText = "2 × (p + l)";
+            } else if (shapeType === 'triangle') {
+                title.innerText = "Segitiga";
+                desc.innerText = "Bangun datar dengan 3 sisi dan 3 titik sudut.";
+                area.innerText = "½ × alas × tinggi";
+                peri.innerText = "Sisi A + Sisi B + Sisi C";
+            } else if (shapeType === 'circle') {
+                title.innerText = "Lingkaran";
+                desc.innerText = "Himpunan semua titik yang berjarak sama dari titik pusat.";
+                area.innerText = "π × r² (π = 22/7 atau 3.14)";
+                peri.innerText = "2 × π × r";
+            }
+        }
+
+        // Initialize default view
+        window.onload = function() {
+            selectGrade(1);
+        };
+    </script>
+</body>
+</html>
